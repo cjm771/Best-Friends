@@ -12,14 +12,14 @@ Although there are quite a few interop plugins and toolkits out there, most of t
 
 FEATURES / GOALS
 ----------------
-	- *No Rhino Maintenence* - Get Panel Geometry from Revit without needing a maintained Rhino or Crazy Grasshopper File.
-	- *Update Pts and Params* - Edit points (adaptive components) and Instance parameters on objects
-	- *CSV Readable Data format* - Data is stored in a 3 column csv, which is human readable and the same format for both from rhino and from revit.
-	- *Minimum Dependencies* - Aside from ghPython for grasshopper and the nodes themselves, there is no external packages needed!
+- *No Rhino Maintenence* - Get Panel Geometry from Revit without needing a maintained Rhino or Crazy Grasshopper File.
+- *Update Pts and Params* - Edit points (adaptive components) and Instance parameters on objects
+- *CSV Readable Data format* - Data is stored in a 3 column csv, which is human readable and the same format for both from rhino and from revit.
+- *Minimum Dependencies* - Aside from ghPython for grasshopper and the nodes themselves, there is no external packages needed!
 
 
 KNOWN ISSUES / FUTURE IMPROVEMENTS
 -----------------------------------
-	- *Updates to Revit Elements only* - add and remove to come
-	- *Adaptive Components and Curtian Panels Only* - (pts updates not permitted on Basic Curtian Panels) More families to come.
-	- *CSV and revit Element count must match* to properly sort. Smarter datamapping to come as well as more documentation on data references
+- *Updates to Revit Elements only* - add and remove to come
+- *Adaptive Components and Curtian Panels Only* - (pts updates not permitted on Basic Curtian Panels) More families to come.
+- *CSV and revit Element count must match* to properly sort. Smarter datamapping to come as well as more documentation on data references
