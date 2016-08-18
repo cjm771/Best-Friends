@@ -1,10 +1,11 @@
 BEST FRIENDS beta v.0.0.624
 =============
 
-**CHECK OUT DOCUMENTATION WEBSITE:**
-<a href='http://chris-malcolm.com/bestfriends'>Best Friends Getting Started + Docs</a>.
 
-Best friends is an interoperability toolkit by <a href='http://chris-malcolm.com'>Chris Malcolm</a>. "Interoperability" is basically the communication and exchange of data between softwares, in our case Revit and Rhino. Revit is a great documentation/BIM tool but often difficult to control geometry. Rhino allows for easier modeling, but often not used for Documentation.
+**CHECK OUT DOCUMENTATION WEBSITE:**
+[Best Friends Getting Started + Docs](http://chris-malcolm.com/bestfriends)
+
+Best friends is an interoperability toolkit by [Chris Malcolm](http://chris-malcolm.com). "Interoperability" is basically the communication and exchange of data between softwares, in our case Revit and Rhino. Revit is a great documentation/BIM tool but often difficult to control geometry. Rhino allows for easier modeling, but often not used for Documentation.
 
 UPDATE, NOT REPLACE!
 --------------------
@@ -23,3 +24,5 @@ KNOWN ISSUES / FUTURE IMPROVEMENTS
 - *Updates to Revit Elements only* - add and remove to come
 - *Adaptive Components and Curtian Panels Only* - (pts updates not permitted on Basic Curtian Panels) More families to come.
 - *CSV and revit Element count must match* to properly sort. Smarter datamapping to come as well as more documentation on data references
+
+-chris
