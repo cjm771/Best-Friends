@@ -25,4 +25,3 @@ KNOWN ISSUES / FUTURE IMPROVEMENTS
 - *Adaptive Components and Curtian Panels Only* - (pts updates not permitted on Basic Curtian Panels) More families to come.
 - *CSV and revit Element count must match* to properly sort. Smarter datamapping to come as well as more documentation on data references
 
--chris
