@@ -1,4 +1,4 @@
-BEST FRIENDS beta v.0.0.627
+BEST FRIENDS beta v.0.0.700
 =============
 
 
