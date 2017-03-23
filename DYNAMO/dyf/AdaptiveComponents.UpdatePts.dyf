@@ -1,0 +1,151 @@
+<Workspace Version="1.2.1.3083" X="-113.589146392675" Y="246.880014529011" zoom="0.692004707491243" Name="AdaptiveComponents.UpdatePts" Description="Update points of adaptive components" ID="b6ee0eb3-8a48-4506-8ecb-d64611d7ee59" Category="CM">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FamilyInstance" resolvedName="Revit.Elements.FamilyInstance" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="fb18c8c0-ddf4-4ea6-aa73-8274b202aa55" type="PythonNodeModels.PythonNode" nickname="Python Script" x="723.156177446547" y="169.472782963993" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <Script>adptPoints = []
+dataEnteringNode = IN
+
+if IN[2]:
+	import clr
+	
+	clr.AddReference('RevitAPI')
+	from Autodesk.Revit.DB import *
+	
+	clr.AddReference("RevitNodes")
+	import Revit
+	from Revit.Elements import *
+
+	
+	# Import DocumentManager
+	clr.AddReference("RevitServices")
+	import RevitServices
+	from RevitServices.Persistence import DocumentManager
+	
+	# &lt;------------ LOG DYNAMO STUFF --------------------&gt;#
+	#dependencies
+	#import traceback
+	import time,datetime
+	#import inspect
+	
+	#constants
+	LOGFILE =  "T:/Malcolm-Chris/REVIT/PYTHON REVIT SHELL/log.txt"
+	LOG_ACTIVE = False
+	
+	def log(textArr,is_raw=False):
+	    global LOGFILE,LOG_ACTIVE
+	    if LOG_ACTIVE:
+	        activeScript = ""
+	        #---- prefix to identify time and script running ---#
+	        ts = time.time()
+	        timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	        precursor ="["+timestamp+"]  --&gt; "
+	        #---- end prefix ---&gt;
+	        filename =  LOGFILE
+	        if not isinstance(textArr, (list, tuple)):
+	            textArr = [textArr]
+	        target = open(filename, 'a+')
+	        target.write("\n")
+	        target.write(precursor)
+	        for i in textArr:
+	            if (not is_raw):
+	                target.write(repr(i))
+	            else:
+	                target.write(i)
+	        target.close()
+	
+	def clearLog():
+	    global LOGFILE,LOG_ACTIVE
+	    if LOG_ACTIVE:
+	        filename =  LOGFILE
+	        target = open(filename, 'w+')
+	        target.write("")
+	        target.close()
+	
+	# &lt;------------ LOG DYNAMO STUFF --------------------&gt;#
+	
+
+	def PointToXYZ(pt):
+	    return XYZ(pt.X,pt.Y,pt.Z)   
+
+	def getUnitsModifier():
+		#get current units modifier
+		displayUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits
+		log(["display Units:",displayUnits])
+		unit = 1
+		unitModifier = UnitUtils.ConvertToInternalUnits(unit, displayUnits)
+		log(["converted", unit, "mm to ", unitModifier," ft"] )
+		return unitModifier
+	
+
+	
+	doc = DocumentManager.Instance.CurrentDBDocument
+	uiapp = DocumentManager.Instance.CurrentUIApplication
+	app = uiapp.Application
+	
+		
+	
+	newPts = IN[1]
+	clearLog()
+	#we need to get units to convert to internal units
+	unitModifier = getUnitsModifier()
+	for i,elID in enumerate(IN[0]):
+		log(["id working with:", elID])
+		element = doc.GetElement(ElementId(elID))
+		
+		adptPoints = AdaptiveComponentInstanceUtils.GetInstancePlacementPointElementRefIds(element)
+		adptPoints = map(lambda x:  doc.GetElement(x), adptPoints)
+		
+		if newPts[i]!=None and len(newPts[i])&gt;0: 
+			t = Transaction(doc, "Change XYZ")
+			t.Start()
+			for j,ptEl in enumerate(adptPoints):
+				ptDecompose = newPts[i][j].split(",")
+				ptEl.Position = XYZ( float(ptDecompose[0])*unitModifier, float(ptDecompose[1])*unitModifier, float(ptDecompose[2])*unitModifier)
+			t.Commit()       
+		
+#Assign your output to the OUT variable.
+#OUT = adptPoints
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="cb5c3d1b-eb0e-45d3-ad37-83abc414915e" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Element.Id" x="449.42838317068" y="2.89761250385959" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="RevitNodes.dll" function="Revit.Elements.Element.Id">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="0b0c5062-2b97-4ec5-bd66-3d2b51afa3b4" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Flatten" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="BuiltIn" function="Flatten@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="45915e5f-ba47-4acc-b0c1-84baf242a129" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-107.228591620126" y="-3.95844071873418" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="//adaptive elements to change&#xD;&#xA;adaptiveEls" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8861203d-1408-40ba-9c44-0f3290babd06" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-408.55293994612" y="134.939905034947" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="//points to update. Need to be dynamo pts. &#xD;&#xA;udpatedPts" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="5f57a439-6a4b-4002-bace-346b20ec1ed3" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-238.820779701577" y="337.176469932902" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="//active boolean.. will only activate if set true&#xD;&#xA;active" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e77161fd-1543-4b39-adb1-e1847127c28b" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="289.118920167588" y="94.9872340629535" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="x.X+&quot;,&quot;+x.Y+&quot;,&quot;+x.Z;" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <CoreNodeModels.Watch guid="90e76505-1b3a-4376-8ebb-2e9d043fd42f" type="CoreNodeModels.Watch" nickname="Watch" x="390.667139938235" y="228.87690723386" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="cb5c3d1b-eb0e-45d3-ad37-83abc414915e" start_index="0" end="fb18c8c0-ddf4-4ea6-aa73-8274b202aa55" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0b0c5062-2b97-4ec5-bd66-3d2b51afa3b4" start_index="0" end="cb5c3d1b-eb0e-45d3-ad37-83abc414915e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="45915e5f-ba47-4acc-b0c1-84baf242a129" start_index="0" end="0b0c5062-2b97-4ec5-bd66-3d2b51afa3b4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8861203d-1408-40ba-9c44-0f3290babd06" start_index="0" end="e77161fd-1543-4b39-adb1-e1847127c28b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5f57a439-6a4b-4002-bace-346b20ec1ed3" start_index="0" end="fb18c8c0-ddf4-4ea6-aa73-8274b202aa55" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e77161fd-1543-4b39-adb1-e1847127c28b" start_index="0" end="fb18c8c0-ddf4-4ea6-aa73-8274b202aa55" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

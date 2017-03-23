@@ -1,0 +1,69 @@
+<Workspace Version="1.2.1.3083" X="175.696799985442" Y="275.623125604549" zoom="1.05429821501133" Name="ptsFromCSVPtFile" Description="Gets points from a points file (csv)" ID="e3487677-777c-44dc-8c46-2c2b4aa051b2" Category="CM.Core">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FamilyInstance" resolvedName="Revit.Elements.FamilyInstance" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="53976a8a-b052-46b3-b6ab-4d15abaaee7c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="File.ReadText" x="250" y="57.1058529038398" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.IO.File.ReadText@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="b2196e09-7ca5-4a82-82be-8313ff7a2297" type="PythonNodeModels.PythonNode" nickname="Get the points" x="489.11926914232" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+import re
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+dataEnteringNode = IN
+list = []
+str = IN[0]
+lines = str.strip().split("\n")
+nl = []
+def my_replace(match):
+	match = match.group().replace("\"","").replace(" ","")
+	return match.replace(",","###")
+
+for line in lines:
+	line = re.sub(r'(".+?")', my_replace, line)
+	if (not line.strip().startswith("#")):
+		nl.append(line)
+
+rows = nl
+cleanRows = []
+for i,row in enumerate(rows):
+	rowList = row.split(",")
+	subRow = []
+	for j,cleanRow in enumerate(rowList):
+		subRow.append(cleanRow.replace("###",","))
+	cleanRows.append(subRow)
+
+def pointStringToPoints(ptList):
+	newPts = []
+	for i, pts in enumerate(ptList):
+		newPts.append([])
+		for j,pt in enumerate(pts):
+			pt = pt.split(",")
+			newPts[i].append(Point.ByCoordinates(float(pt[0]), float(pt[1]), float(pt[2])))
+	return newPts
+	
+#Assign your output to the OUT variable.
+OUT = pointStringToPoints(cleanRows)
+OUT2 = False
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="07b0ffea-8f47-4adb-a42e-d663417f2da6" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="686.11926914232" y="21.5982721382289" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="pts" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8a70370e-56ce-4976-a4a3-8b36dbe43761" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-99.5" y="89.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="//provide path to csv points file&#xD;&#xA;csvPath&#xD;&#xA;" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="53976a8a-b052-46b3-b6ab-4d15abaaee7c" start_index="0" end="b2196e09-7ca5-4a82-82be-8313ff7a2297" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b2196e09-7ca5-4a82-82be-8313ff7a2297" start_index="0" end="07b0ffea-8f47-4adb-a42e-d663417f2da6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8a70370e-56ce-4976-a4a3-8b36dbe43761" start_index="0" end="53976a8a-b052-46b3-b6ab-4d15abaaee7c" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>
