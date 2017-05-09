@@ -1,0 +1,5 @@
+#remove bat
+*.bat
+*.sh
+.gitignore
+README_HOWTOUPDATE.txt
